@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  allowedDevOrigins: process.env.REPLIT_DOMAINS 
+    ? process.env.REPLIT_DOMAINS.split(',').map(domain => `https://${domain.trim()}`)
+    : ['http://localhost:5000', 'http://127.0.0.1:5000'],
   webpack: (config, { isServer }) => {
     config.resolve.fallback = {
       ...config.resolve.fallback,
