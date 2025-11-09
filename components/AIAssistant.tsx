@@ -90,7 +90,10 @@ export default function AIAssistant({ medicalRecords, patientAddress }: AIAssist
       <div className="mb-4">
         <h3 className="text-2xl font-bold text-white mb-2">🤖 AI Medical Assistant</h3>
         <p className="text-sm text-gray-400">
-          Powered by OpenAI • Your data stays private and encrypted
+          Powered by OpenAI • Medical records are sent to OpenAI for analysis
+        </p>
+        <p className="text-xs text-yellow-500 mt-1">
+          ⚠️ Your data is shared with OpenAI to provide AI assistance. Not for diagnostic purposes.
         </p>
       </div>
 

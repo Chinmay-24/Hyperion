@@ -67,10 +67,11 @@ Required environment variables (set via Replit Secrets):
 ### New Features Added
 1. **Medical History Timeline** - Visual chronological timeline of patient records with expandable details
 2. **Search and Filter** - Advanced search functionality with filters by record type and date range
-3. **Emergency Contacts** - Manage emergency contact information with full CRUD operations
-4. **Prescription Tracker** - Track medications, dosages, frequencies, and active prescriptions
+3. **Emergency Contacts** - Manage emergency contact information with full CRUD operations (client-side storage)
+4. **Prescription Tracker** - Track medications, dosages, frequencies, and active prescriptions (client-side storage)
 5. **Export to PDF** - Export medical records to PDF format for printing or sharing
-6. **Enhanced Patient Portal** - Six-tab navigation (Records, Timeline, Meds, Emergency, Create, Access)
+6. **AI Medical Assistant** - OpenAI-powered chatbot that analyzes medical records, answers health questions, and provides personalized insights
+7. **Enhanced Patient Portal** - Seven-tab navigation (Records, Timeline, AI, Meds, Emergency, Create, Access)
 
 ## Development Workflow
 
