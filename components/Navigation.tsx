@@ -19,13 +19,13 @@ export default function Navigation() {
   const isActive = (href: string) => pathname === href;
 
   return (
-    <nav className="glass-effect border-b border-gray-700 sticky top-0 z-40">
+    <nav className="glass-effect-strong border-b border-white/10 sticky top-0 z-50 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-20">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="text-2xl">⚡</span>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <Link href="/" className="flex items-center space-x-3 group">
+              <span className="text-3xl group-hover:scale-110 transition-transform">⚡</span>
+              <span className="text-2xl font-bold gradient-text">
                 Hyperion
               </span>
             </Link>
@@ -33,18 +33,18 @@ export default function Navigation() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-4">
+            <div className="ml-10 flex items-baseline space-x-2">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
                     isActive(item.href)
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                      : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
                   }`}
                 >
-                  <span className="mr-2">{item.icon}</span>
+                  <span className="mr-2 text-lg">{item.icon}</span>
                   {item.label}
                 </Link>
               ))}
@@ -71,20 +71,20 @@ export default function Navigation() {
 
       {/* Mobile Navigation */}
       {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1">
+        <div className="md:hidden glass-effect-strong border-t border-white/10">
+          <div className="px-4 pt-4 pb-4 space-y-2">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
-                className={`block px-3 py-2 rounded-lg text-base font-medium ${
+                className={`block px-4 py-3 rounded-xl text-base font-semibold transition-all ${
                   isActive(item.href)
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg'
+                    : 'text-gray-300 hover:text-white hover:bg-white/10'
                 }`}
               >
-                <span className="mr-2">{item.icon}</span>
+                <span className="mr-3 text-xl">{item.icon}</span>
                 {item.label}
               </Link>
             ))}

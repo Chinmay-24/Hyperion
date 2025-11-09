@@ -162,9 +162,9 @@ export default function UserPortal() {
             <button
               onClick={handleConnect}
               disabled={loading}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl disabled:opacity-50"
+              className="btn-primary py-4 px-8"
             >
-              {loading ? 'Connecting...' : 'Connect Wallet'}
+              {loading ? 'Connecting...' : '🔗 Connect Wallet'}
             </button>
           </div>
         </div>
@@ -183,33 +183,33 @@ export default function UserPortal() {
         </div>
 
         {/* Tabs */}
-        <div className="glass-effect rounded-xl p-2 mb-6 flex space-x-2">
+        <div className="glass-effect-strong rounded-2xl p-3 mb-8 flex space-x-3">
           <button
             onClick={() => setActiveTab('records')}
-            className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all duration-300 ${
               activeTab === 'records'
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                : 'text-gray-300 hover:text-white'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
             }`}
           >
             📋 My Records
           </button>
           <button
             onClick={() => setActiveTab('create')}
-            className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all duration-300 ${
               activeTab === 'create'
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                : 'text-gray-300 hover:text-white'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
             }`}
           >
             ➕ Create Record
           </button>
           <button
             onClick={() => setActiveTab('access')}
-            className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${
+            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all duration-300 ${
               activeTab === 'access'
-                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white'
-                : 'text-gray-300 hover:text-white'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
             }`}
           >
             🔐 Access Control
@@ -218,7 +218,7 @@ export default function UserPortal() {
 
         {/* Records Tab */}
         {activeTab === 'records' && (
-          <div className="glass-effect rounded-2xl p-6 md:p-8">
+          <div className="glass-effect-strong rounded-3xl p-6 md:p-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white">Your Medical Records</h2>
               <div className="text-sm text-gray-400">
@@ -265,7 +265,7 @@ export default function UserPortal() {
 
         {/* Create Record Tab */}
         {activeTab === 'create' && (
-          <div className="glass-effect rounded-2xl p-6 md:p-8">
+          <div className="glass-effect-strong rounded-3xl p-6 md:p-8">
             <h2 className="text-2xl font-bold text-white mb-6">Create New Record</h2>
             <div className="space-y-5">
               <div>
@@ -305,7 +305,7 @@ export default function UserPortal() {
 
         {/* Access Control Tab */}
         {activeTab === 'access' && (
-          <div className="glass-effect rounded-2xl p-6 md:p-8">
+          <div className="glass-effect-strong rounded-3xl p-6 md:p-8">
             <h2 className="text-2xl font-bold text-white mb-6">Manage Access</h2>
             <p className="text-gray-400 mb-6">
               Grant or revoke access to hospitals and insurance providers. You have full control over who can view your records.
