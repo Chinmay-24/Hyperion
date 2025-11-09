@@ -10,6 +10,7 @@ import MedicalTimeline from '@/components/MedicalTimeline';
 import RecordSearch from '@/components/RecordSearch';
 import EmergencyContacts from '@/components/EmergencyContacts';
 import PrescriptionTracker from '@/components/PrescriptionTracker';
+import AIAssistant from '@/components/AIAssistant';
 
 export default function UserPortal() {
   const [account, setAccount] = useState<string | null>(null);
@@ -22,7 +23,7 @@ export default function UserPortal() {
   });
   const [viewingRecord, setViewingRecord] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'records' | 'timeline' | 'create' | 'prescriptions' | 'emergency' | 'access'>('records');
+  const [activeTab, setActiveTab] = useState<'records' | 'timeline' | 'ai' | 'create' | 'prescriptions' | 'emergency' | 'access'>('records');
   const [filteredRecords, setFilteredRecords] = useState<any[]>([]);
 
   useEffect(() => {
@@ -226,7 +227,7 @@ export default function UserPortal() {
         </div>
 
         {/* Tabs */}
-        <div className="glass-effect-strong rounded-2xl p-3 mb-8 grid grid-cols-2 md:grid-cols-6 gap-3">
+        <div className="glass-effect-strong rounded-2xl p-3 mb-8 grid grid-cols-2 md:grid-cols-7 gap-3">
           <button
             onClick={() => setActiveTab('records')}
             className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
@@ -246,6 +247,16 @@ export default function UserPortal() {
             }`}
           >
             📊 Timeline
+          </button>
+          <button
+            onClick={() => setActiveTab('ai')}
+            className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
+              activeTab === 'ai'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
+            }`}
+          >
+            🤖 AI
           </button>
           <button
             onClick={() => setActiveTab('prescriptions')}
@@ -361,6 +372,11 @@ export default function UserPortal() {
             </div>
             <MedicalTimeline records={records} />
           </div>
+        )}
+
+        {/* AI Assistant Tab */}
+        {activeTab === 'ai' && account && (
+          <AIAssistant medicalRecords={records} patientAddress={account} />
         )}
 
         {/* Prescriptions Tab */}
