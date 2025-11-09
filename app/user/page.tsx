@@ -117,12 +117,24 @@ export default function UserPortal() {
       return;
     }
 
+    // Validate account is a valid Ethereum address
+    if (!/^0x[a-fA-F0-9]{40}$/.test(account)) {
+      alert('Invalid wallet address. Please reconnect your wallet.');
+      return;
+    }
+
     try {
       setLoading(true);
+      
+      console.log('Creating record for account:', account);
+      console.log('Record type:', newRecord.recordType);
       
       const encryptionKey = generateKeyFromAddress(account);
       const encryptedData = encryptData(newRecord.data, encryptionKey);
       const ipfsHash = await uploadToIPFS(encryptedData);
+      
+      console.log('IPFS hash:', ipfsHash);
+      console.log('Calling contract.createRecord with:', ipfsHash, account, newRecord.recordType);
       
       const tx = await contract.createRecord(
         ipfsHash,
@@ -130,6 +142,7 @@ export default function UserPortal() {
         newRecord.recordType
       );
       
+      console.log('Transaction sent:', tx.hash);
       await tx.wait();
       
       alert('Record created successfully!');
@@ -138,7 +151,11 @@ export default function UserPortal() {
       setActiveTab('records');
     } catch (error: any) {
       console.error('Error creating record:', error);
-      alert('Error creating record: ' + error.message);
+      if (error.message?.includes('ENS')) {
+        alert('Blockchain error. Please refresh the page and reconnect your wallet.');
+      } else {
+        alert('Error creating record: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }
