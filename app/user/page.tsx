@@ -4,7 +4,12 @@ import { useState, useEffect } from 'react';
 import { connectWallet, getContract, getCurrentAccount } from '@/lib/web3';
 import { uploadToIPFS, getFromIPFS } from '@/lib/ipfs';
 import { encryptData, decryptData, generateKeyFromAddress } from '@/lib/encryption';
+import { exportRecordsToPDF } from '@/lib/exportPDF';
 import AccessControl from '@/components/AccessControl';
+import MedicalTimeline from '@/components/MedicalTimeline';
+import RecordSearch from '@/components/RecordSearch';
+import EmergencyContacts from '@/components/EmergencyContacts';
+import PrescriptionTracker from '@/components/PrescriptionTracker';
 
 export default function UserPortal() {
   const [account, setAccount] = useState<string | null>(null);
@@ -17,7 +22,8 @@ export default function UserPortal() {
   });
   const [viewingRecord, setViewingRecord] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<'records' | 'create' | 'access'>('records');
+  const [activeTab, setActiveTab] = useState<'records' | 'timeline' | 'create' | 'prescriptions' | 'emergency' | 'access'>('records');
+  const [filteredRecords, setFilteredRecords] = useState<any[]>([]);
 
   useEffect(() => {
     checkWalletConnection();
@@ -62,8 +68,45 @@ export default function UserPortal() {
       }
       
       setRecords(recordsData);
+      setFilteredRecords(recordsData);
     } catch (error: any) {
       console.error('Error loading records:', error);
+    }
+  };
+
+  const handleSearch = (query: string, filters: any) => {
+    let filtered = [...records];
+
+    // Text search
+    if (query) {
+      filtered = filtered.filter(record => 
+        record.recordType?.toLowerCase().includes(query.toLowerCase()) ||
+        record.diagnosis?.toLowerCase().includes(query.toLowerCase()) ||
+        record.treatment?.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+
+    // Filter by type
+    if (filters.recordType && filters.recordType !== 'all') {
+      filtered = filtered.filter(record => record.recordType === filters.recordType);
+    }
+
+    // Filter by date range
+    if (filters.dateFrom) {
+      const fromDate = new Date(filters.dateFrom).getTime() / 1000;
+      filtered = filtered.filter(record => Number(record.timestamp) >= fromDate);
+    }
+    if (filters.dateTo) {
+      const toDate = new Date(filters.dateTo).getTime() / 1000;
+      filtered = filtered.filter(record => Number(record.timestamp) <= toDate);
+    }
+
+    setFilteredRecords(filtered);
+  };
+
+  const handleExport = () => {
+    if (account) {
+      exportRecordsToPDF(filteredRecords, account);
     }
   };
 
@@ -183,57 +226,100 @@ export default function UserPortal() {
         </div>
 
         {/* Tabs */}
-        <div className="glass-effect-strong rounded-2xl p-3 mb-8 flex space-x-3">
+        <div className="glass-effect-strong rounded-2xl p-3 mb-8 grid grid-cols-2 md:grid-cols-6 gap-3">
           <button
             onClick={() => setActiveTab('records')}
-            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all duration-300 ${
+            className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
               activeTab === 'records'
                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
                 : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
             }`}
           >
-            📋 My Records
+            📋 Records
+          </button>
+          <button
+            onClick={() => setActiveTab('timeline')}
+            className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
+              activeTab === 'timeline'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
+            }`}
+          >
+            📊 Timeline
+          </button>
+          <button
+            onClick={() => setActiveTab('prescriptions')}
+            className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
+              activeTab === 'prescriptions'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
+            }`}
+          >
+            💊 Meds
+          </button>
+          <button
+            onClick={() => setActiveTab('emergency')}
+            className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
+              activeTab === 'emergency'
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
+            }`}
+          >
+            🚨 Emergency
           </button>
           <button
             onClick={() => setActiveTab('create')}
-            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all duration-300 ${
+            className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
               activeTab === 'create'
                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
                 : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
             }`}
           >
-            ➕ Create Record
+            ➕ Create
           </button>
           <button
             onClick={() => setActiveTab('access')}
-            className={`flex-1 py-4 px-6 rounded-xl font-bold transition-all duration-300 ${
+            className={`py-3 px-4 rounded-xl font-bold transition-all duration-300 text-sm md:text-base ${
               activeTab === 'access'
                 ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
                 : 'text-gray-300 hover:text-white hover:bg-white/10 hover:scale-105'
             }`}
           >
-            🔐 Access Control
+            🔐 Access
           </button>
         </div>
 
         {/* Records Tab */}
         {activeTab === 'records' && (
-          <div className="glass-effect-strong rounded-3xl p-6 md:p-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-white">Your Medical Records</h2>
-              <div className="text-sm text-gray-400">
-                {records.length} {records.length === 1 ? 'record' : 'records'}
+          <div>
+            <RecordSearch onSearch={handleSearch} />
+            <div className="glass-effect-strong rounded-3xl p-6 md:p-8">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-white">Your Medical Records</h2>
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={handleExport}
+                    disabled={filteredRecords.length === 0}
+                    className="btn-primary text-sm px-4 py-2 disabled:opacity-50"
+                  >
+                    📥 Export PDF
+                  </button>
+                  <div className="text-sm text-gray-400">
+                    {filteredRecords.length} {filteredRecords.length === 1 ? 'record' : 'records'}
+                  </div>
+                </div>
               </div>
-            </div>
-            {records.length === 0 ? (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4 opacity-50">📭</div>
-                <p className="text-gray-400 text-lg mb-2">No records found</p>
-                <p className="text-gray-500 text-sm">Create your first record to get started</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {records.map((record) => (
+              {filteredRecords.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4 opacity-50">📭</div>
+                  <p className="text-gray-400 text-lg mb-2">No records found</p>
+                  <p className="text-gray-500 text-sm">
+                    {records.length === 0 ? 'Create your first record to get started' : 'Try adjusting your search filters'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {filteredRecords.map((record) => (
                   <div
                     key={record.id}
                     className="bg-gray-800/50 border border-gray-700 rounded-xl p-5 hover:border-purple-500 transition-all card-hover"
@@ -257,11 +343,31 @@ export default function UserPortal() {
                       View Details
                     </button>
                   </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
+
+        {/* Timeline Tab */}
+        {activeTab === 'timeline' && (
+          <div className="glass-effect-strong rounded-3xl p-6 md:p-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">Medical History Timeline</h2>
+              <div className="text-sm text-gray-400">
+                Chronological view of your records
+              </div>
+            </div>
+            <MedicalTimeline records={records} />
+          </div>
+        )}
+
+        {/* Prescriptions Tab */}
+        {activeTab === 'prescriptions' && <PrescriptionTracker />}
+
+        {/* Emergency Contacts Tab */}
+        {activeTab === 'emergency' && <EmergencyContacts />}
 
         {/* Create Record Tab */}
         {activeTab === 'create' && (
