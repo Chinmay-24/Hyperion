@@ -16,9 +16,18 @@ export default function AccessControl({ onAccessChanged }: AccessControlProps) {
 
   const contract = getContract();
 
+  const isValidAddress = (address: string) => {
+    return /^0x[a-fA-F0-9]{40}$/.test(address);
+  };
+
   const handleGrantAccess = async () => {
     if (!contract || !providerAddress) {
       alert('Please enter provider address');
+      return;
+    }
+
+    if (!isValidAddress(providerAddress)) {
+      alert('Invalid Ethereum address. Address must start with 0x followed by 40 hexadecimal characters.');
       return;
     }
 
@@ -87,9 +96,21 @@ export default function AccessControl({ onAccessChanged }: AccessControlProps) {
               value={providerAddress}
               onChange={(e) => setProviderAddress(e.target.value)}
               placeholder="0x..."
-              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-xl text-white font-mono placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className={`w-full p-3 bg-gray-800 border rounded-xl text-white font-mono placeholder-gray-500 focus:outline-none focus:ring-2 ${
+                providerAddress && !isValidAddress(providerAddress)
+                  ? 'border-red-500 focus:ring-red-500'
+                  : 'border-gray-700 focus:ring-purple-500'
+              }`}
             />
-            <p className="text-xs text-gray-500 mt-2">Enter the wallet address of the hospital or insurance provider</p>
+            {providerAddress && !isValidAddress(providerAddress) && (
+              <p className="text-xs text-red-400 mt-2">⚠️ Invalid address format. Must be 0x followed by 40 hex characters.</p>
+            )}
+            {providerAddress && isValidAddress(providerAddress) && (
+              <p className="text-xs text-green-400 mt-2">✓ Valid Ethereum address</p>
+            )}
+            {!providerAddress && (
+              <p className="text-xs text-gray-500 mt-2">Enter the wallet address of the hospital or insurance provider</p>
+            )}
           </div>
           
           <div className="flex items-center space-x-6">
