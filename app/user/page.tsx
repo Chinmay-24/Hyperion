@@ -57,21 +57,21 @@ export default function UserPortal() {
     if (!contract || !account) return;
     
     try {
-      const recordIds = await contract.getPatientRecords(account);
-      const recordsData = [];
-      
-      for (const id of recordIds) {
-        const record = await contract.getRecord(id);
-        recordsData.push({
-          id: id.toString(),
-          ...record
-        });
+      // Temporarily load from sessionStorage for demo
+      const savedRecords = sessionStorage.getItem('demoRecords_' + account);
+      if (savedRecords) {
+        const recordsData = JSON.parse(savedRecords);
+        setRecords(recordsData);
+        setFilteredRecords(recordsData);
+        return;
       }
       
-      setRecords(recordsData);
-      setFilteredRecords(recordsData);
+      setRecords([]);
+      setFilteredRecords([]);
     } catch (error: any) {
       console.error('Error loading records:', error);
+      setRecords([]);
+      setFilteredRecords([]);
     }
   };
 
@@ -134,28 +134,34 @@ export default function UserPortal() {
       const ipfsHash = await uploadToIPFS(encryptedData);
       
       console.log('IPFS hash:', ipfsHash);
-      console.log('Calling contract.createRecord with:', ipfsHash, account, newRecord.recordType);
       
-      const tx = await contract.createRecord(
+      // Create demo record (blockchain disabled for demo)
+      const newRecordData = {
+        id: Date.now().toString(),
         ipfsHash,
-        account,
-        newRecord.recordType
-      );
+        patient: account,
+        provider: account,
+        timestamp: Math.floor(Date.now() / 1000),
+        recordType: newRecord.recordType,
+        isActive: true,
+        diagnosis: newRecord.recordType,
+        treatment: 'Encrypted in IPFS',
+        hospital: 'Demo Hospital'
+      };
       
-      console.log('Transaction sent:', tx.hash);
-      await tx.wait();
+      // Save to sessionStorage
+      const savedRecords = sessionStorage.getItem('demoRecords_' + account);
+      const allRecords = savedRecords ? JSON.parse(savedRecords) : [];
+      allRecords.push(newRecordData);
+      sessionStorage.setItem('demoRecords_' + account, JSON.stringify(allRecords));
       
-      alert('Record created successfully!');
+      alert('✅ Record created successfully!\n\n(Demo mode: Records saved in browser session)');
       setNewRecord({ data: '', recordType: 'diagnosis' });
       await loadRecords();
       setActiveTab('records');
     } catch (error: any) {
       console.error('Error creating record:', error);
-      if (error.message?.includes('ENS')) {
-        alert('Blockchain error. Please refresh the page and reconnect your wallet.');
-      } else {
-        alert('Error creating record: ' + error.message);
-      }
+      alert('Error creating record: ' + error.message);
     } finally {
       setLoading(false);
     }

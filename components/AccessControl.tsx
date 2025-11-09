@@ -72,10 +72,13 @@ export default function AccessControl({ onAccessChanged }: AccessControlProps) {
       const account = await getCurrentAccount();
       if (!account) return;
 
-      const list = await contract.getAccessList(account);
-      setAccessList(list);
+      // Temporarily disabled - requires Hardhat node
+      // const list = await contract.getAccessList(account);
+      // setAccessList(list);
+      setAccessList([]);
     } catch (error: any) {
       console.error('Error loading access list:', error);
+      setAccessList([]);
     }
   };
 
